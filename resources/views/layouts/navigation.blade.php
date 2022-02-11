@@ -15,8 +15,11 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('subscribe')" :active="request()->routeIs('subscribe')">
+                    <x-nav-link :href="route('subscribe.index')" :active="request()->routeIs('subscribeindex.index')">
                         Choose Plan
+                    </x-nav-link>
+                    <x-nav-link :href="route('life.index')" :active="request()->routeIs('life.index')">
+                        Life Time
                     </x-nav-link>
                 </div>
             </div>

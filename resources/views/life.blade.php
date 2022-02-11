@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Choose you plan
+            Life time package
         </h2>
-        <p>Enjoy a monthly subscription with flexible plans</p>
+        <p>Make a one of payment and enjoy our service for life!</p>
     </x-slot>
 
     <div class="py-12">
@@ -11,9 +11,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="p-6">
-                        <form id="payment-form" action="{{ route('subscribe.store') }}" method="POST"
-                              data-secret="{{ $intent->client_secret }}"
-                        >
+                        <form id="payment-form" action="{{ route('life.store') }}" method="POST">
                             @csrf
 
                             @if(Session::has('success'))
@@ -26,20 +24,8 @@
 
                             <div class="mb-4">
                                 <h3 class="text-lg mb-4">
-                                    Choose your plan
+                                    Life time package &pound;499.00
                                 </h3>
-                                <div class="">
-                                    <input type="radio" name="plan" id="standard"
-                                           value="price_1KRmQcA5tIN4n0gQTEBGvfGz"
-                                           checked
-                                    >
-                                    <label for="standard">Standard plan &pound;10.00 / month</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="plan" id="premium"
-                                           value="price_1KRbjPA5tIN4n0gQjBNt0zY8">
-                                    <label for="premium">Premium plan &pound;59.00 / month</label>
-                                </div>
                             </div>
 
                             <hr class="mb-4">
@@ -108,32 +94,30 @@
 
             var form = document.getElementById('payment-form');
             var cardHolderName = document.getElementById('card-holder-name');
-            var clientSecret = form.dataset.secret;
 
             form.addEventListener('submit', async function (ev) {
                 ev.preventDefault();
                 document.getElementById("card-button").style.visibility = 'hidden';
                 document.getElementById("spinner").style.visibility = 'visible';
 
-                const {setupIntent, error} = await stripe.confirmCardSetup(
-                    clientSecret, {
-                        payment_method: {
-                            card,
-                            billing_details: {name: cardHolderName.value}
-                        }
+                const { paymentMethod, error } = await stripe.createPaymentMethod(
+                    'card', card, {
+                        billing_details: { name: cardHolderName.value }
                     }
                 );
+
 
                 if (error) {
                     var errorElement = document.getElementById('card-errors');
                     errorElement.textContent = error.message;
                 } else {
+                    //console.log(paymentMethod.id);
                     var form = document.getElementById('payment-form');
                     var hiddenInput = document.createElement('input');
                     hiddenInput.setAttribute('type', 'hidden');
                     hiddenInput.setAttribute('name', 'paymentMethod');
                     // pass to our server
-                    hiddenInput.setAttribute('value', setupIntent.payment_method);
+                    hiddenInput.setAttribute('value', paymentMethod.id);
                     form.appendChild(hiddenInput);
                     form.submit();
                 }
