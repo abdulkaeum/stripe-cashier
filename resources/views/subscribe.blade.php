@@ -29,6 +29,7 @@
                                     Choose your plan
                                 </h3>
                                 <div class="">
+                                    <!-- price_1KRmQcA5tIN4n0gQTEBGvfGz -- would be stored in your db -->
                                     <input type="radio" name="plan" id="standard"
                                            value="price_1KRmQcA5tIN4n0gQTEBGvfGz"
                                            checked
@@ -82,7 +83,7 @@
         <script>
             document.getElementById("spinner").style.visibility = 'hidden';
 
-            var stripe = Stripe('pk_test_51KRbaFA5tIN4n0gQNgbRUwbHdSj6kSXLbNNZaEldnt6PANJlW7CR9hQz02Yoj3AhcZKxzsOlIhKLcSIJcZgrWk7L00noMXAoUf');
+            var stripe = Stripe('{{ config('services.stripe.publishable') }}');
             var elements = stripe.elements();
 
             var style = {
@@ -112,8 +113,10 @@
 
             form.addEventListener('submit', async function (ev) {
                 ev.preventDefault();
+                card.update({ disabled: true });
                 document.getElementById("card-button").style.visibility = 'hidden';
                 document.getElementById("spinner").style.visibility = 'visible';
+                cardHolderName.readOnly = true;
 
                 const {setupIntent, error} = await stripe.confirmCardSetup(
                     clientSecret, {
@@ -137,31 +140,6 @@
                     form.appendChild(hiddenInput);
                     form.submit();
                 }
-
-                /*// If the client secret was rendered server-side as a data-secret attribute
-                // on the <form> element, you can retrieve it here by calling `form.dataset.secret`
-                stripe.confirmCardPayment(clientSecret, {
-                    payment_method: {
-                        card: card,
-                        billing_details: {
-                            name: 'Jenny Rosen'
-                        }
-                    }
-                }).then(function (result) {
-                    if (result.error) {
-                        // Show error to your customer (for example, insufficient funds)
-                        console.log(result.error.message);
-                    } else {
-                        // The payment has been processed!
-                        if (result.paymentIntent.status === 'succeeded') {
-                            // Show a success message to your customer
-                            // There's a risk of the customer closing the window before callback
-                            // execution. Set up a webhook or plugin to listen for the
-                            // payment_intent.succeeded event that handles any business critical
-                            // post-payment actions.
-                        }
-                    }
-                });*/
             });
         </script>
     @endpush
